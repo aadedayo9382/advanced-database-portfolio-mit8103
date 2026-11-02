@@ -42,35 +42,26 @@ The main objectives of the project are to:
 
 The database system will be accessed by different categories of users, depending on their responsibilities within the organisation.
 
-### Customers: Browse products, manage their accounts, place orders, make payments, and track deliveries.
-### System Administrators: Manage user accounts, maintain database security, and oversee system operations.
-### Inventory Managers: Add products, update product information, manage product attributes, and monitor stock levels.
-### Order Management Staff: View customer orders, process orders, and update order statuses.
-### Finance and Payment Personnel: Monitor payment records, verify transactions, and manage payment information.
-### Delivery Personnel: Access delivery records and update delivery statuses.
-### Database Administrators: Manage database performance, backups, security, transactions, and data integrity.
+- Customers: Browse products, manage their accounts, place orders, make payments, and track deliveries.
+-  System Administrators: Manage user accounts, maintain database security, and oversee system operations.
+-  Inventory Managers: Add products, update product information, manage product attributes, and monitor stock levels.
+-  Order Management Staff: View customer orders, process orders, and update order statuses.
+-  Finance and Payment Personnel: Monitor payment records, verify transactions, and manage payment information.
+-  Delivery Personnel: Access delivery records and update delivery statuses.
+-  Database Administrators: Manage database performance, backups, security, transactions, and data integrity.
 _______________________________________________________________________________________________________________
 
 ## 5. Major Data to Be Stored
 
 The database will contain the following major categories of information:
 
-- Data Category
-- Description
-- Products
-- Product names, descriptions, prices, categories, and availability.
-- Product Attributes
-- Product sizes, colours, brands, specifications, and other characteristics.
-- Customers
-- Customer names, email addresses, phone numbers, account details, and delivery addresses.
-- Orders
-- Order references, customer details, order dates, quantities, and order statuses.
-- Payments
-- Payment references, amounts, payment methods, dates, and transaction statuses.
-- Inventory/Stock
-- Product quantities, stock availability, and stock updates.
-- Delivery Records
-- Delivery addresses, tracking references, delivery dates, delivery personnel, and delivery statuses.
+- Products: Product names, descriptions, prices, categories, and availability.
+- Product Attributes: Product sizes, colours, brands, specifications, and other characteristics.
+- Customers: Customer names, email addresses, phone numbers, account details, and delivery addresses.
+- Orders: Order references, customer details, order dates, quantities, and order statuses.
+- Payments: Payment references, amounts, payment methods, dates, and transaction statuses.
+- Inventory/Stock: Product quantities, stock availability, and stock updates.
+- Delivery Records: Delivery addresses, tracking references, delivery dates, delivery personnel, and delivery statuses.
 
 
 ## 6. Key Database Operations
@@ -159,7 +150,7 @@ Activities will include:
 
 
 
-#8. Expected Outcome
+# 8. Expected Outcome
 
 At the end of this project, a functional database solution will be designed to support the major operational requirements of Heywizzle Limited.
 
