@@ -68,13 +68,13 @@ The database will contain the following major categories of information:
 
 The database management system will support the following major operations:
 
-### Product Management: Add new products, edit product details, assign categories, and manage product attributes.
-### Customer Management: Register customers, update customer information, and retrieve customer records.
-### Order Processing: Create customer orders, retrieve order details, update order statuses, and manage order records.
-### Inventory Management: Update stock quantities, monitor product availability, and adjust inventory after purchases.
-### Payment Management: Record payments, verify payment transactions, and update payment statuses.
-### Delivery Management: Create delivery records, assign deliveries, update delivery statuses, and track customer orders.
-### Data Retrieval and Reporting: Execute queries to retrieve business information and generate reports on products, customers, sales, payments, and deliveries.
+-  Product Management: Add new products, edit product details, assign categories, and manage product attributes.
+-  Customer Management: Register customers, update customer information, and retrieve customer records.
+-  Order Processing: Create customer orders, retrieve order details, update order statuses, and manage order records.
+-  Inventory Management: Update stock quantities, monitor product availability, and adjust inventory after purchases.
+-  Payment Management: Record payments, verify payment transactions, and update payment statuses.
+-  Delivery Management: Create delivery records, assign deliveries, update delivery statuses, and track customer orders.
+-  Data Retrieval and Reporting: Execute queries to retrieve business information and generate reports on products, customers, sales, payments, and deliveries.
 
 ## 7. Project Portfolios
 
