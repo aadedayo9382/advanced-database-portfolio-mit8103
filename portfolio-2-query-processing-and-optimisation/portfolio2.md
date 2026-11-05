@@ -1404,4 +1404,5 @@ The proposed techniques provide a foundation for improving the efficiency and pe
 
 The knowledge and practical implementation from this portfolio will support subsequent work on **Portfolio 3: Transactions and Concurrency**, where database transaction management, ACID properties, locking mechanisms, isolation levels, and concurrent transaction processing will be examined.
 
+The complete mysql query for the database has been attached to this portfolio - heywizzle_db.sql
 ---
