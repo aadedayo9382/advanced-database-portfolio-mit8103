@@ -4,18 +4,6 @@
 -- Database: heywizzle_db
 -- Portfolio 2: Query Processing and Optimisation
 -- Target: MySQL 8.0.18+ / InnoDB
---
--- This script creates the database, tables, sample records, useful
--- indexes, views, and Portfolio 2 query examples.
---
--- Run this file in MySQL Workbench or:
---   mysql -u YOUR_USER -p < heywizzle_db.sql
---
--- IMPORTANT:
--- 1. This is a self-contained implementation based on the entities
---    and assumed column names used in the Portfolio 2 draft.
--- 2. DROP DATABASE is intentionally NOT used. Existing data is kept.
--- 3. For a clean rebuild, manually back up and drop heywizzle_db first.
 -- =============================================================
 
 CREATE DATABASE IF NOT EXISTS heywizzle_db
