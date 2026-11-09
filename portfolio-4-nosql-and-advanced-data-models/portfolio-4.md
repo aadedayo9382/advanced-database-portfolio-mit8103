@@ -124,7 +124,7 @@ The following example demonstrates a clothing product stored as a MongoDB docume
   brand: "Heywizzle",
   description: "A comfortable cotton T-shirt.",
   price: 25.00,
-  currency: "USD",
+  currency: "NGN",
   stock_quantity: 50,
   attributes: {
     size: ["S", "M", "L", "XL"],
@@ -152,8 +152,8 @@ An electronic product can use the same general document structure while containi
   product_name: "Smartphone X",
   category: "Electronics",
   brand: "TechBrand",
-  price: 499.99,
-  currency: "USD",
+  price: 10000.00,
+  currency: "NGN",
   stock_quantity: 20,
   attributes: {
     screen_size: "6.5 inches",
@@ -179,7 +179,7 @@ This demonstrates how MongoDB supports flexible product structures within the sa
   category: "Furniture",
   brand: "Heywizzle Home",
   price: 150.00,
-  currency: "USD",
+  currency: "NGN",
   stock_quantity: 15,
   attributes: {
     material: "Leather",
@@ -238,7 +238,7 @@ db.products.insertOne({
   product_id: 102,
   product_name: "Smartphone X",
   category: "Electronics",
-  price: 499.99,
+  price: 10000.00,
   stock_quantity: 20,
   attributes: {
     storage_capacity: "256GB",

@@ -1,0 +1,17 @@
+{
+  product_id: 102,
+  product_name: "Smartphone X",
+  category: "Electronics",
+  brand: "TechBrand",
+  price: 10000.00,
+  currency: "NGN",
+  stock_quantity: 20,
+  attributes: {
+    screen_size: "6.5 inches",
+    storage_capacity: "256GB",
+    processor: "Octa-core",
+    battery_capacity: "5000mAh",
+    operating_system: "Android"
+  },
+  is_active: true
+}
