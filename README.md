@@ -155,3 +155,16 @@ Activities will include:
 At the end of this project, a functional database solution will be designed to support the major operational requirements of Heywizzle Limited.
 
 The resulting database model will provide a foundation for managing the company's e-commerce activities efficiently while supporting future business growth and technological expansion.
+
+## 14. References
+- MySQL Reference Manual — Replication: https://dev.mysql.com/doc/refman/8.4/en/replication.html
+- MySQL Reference Manual — Partitioning: https://dev.mysql.com/doc/refman/8.4/en/partitioning.html
+- MySQL Reference Manual — InnoDB and Transactions: https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-model.html
+- MongoDB. *MongoDB Manual – Documents*. https://www.mongodb.com/docs/manual/core/document/
+- MongoDB. *MongoDB Manual – Data Modeling*. https://www.mongodb.com/docs/manual/data-modeling/
+- MongoDB. *MongoDB Manual – Schema Validation*. https://www.mongodb.com/docs/manual/core/schema-validation/
+- MongoDB. *MongoDB Manual – Sharding*. https://www.mongodb.com/docs/manual/sharding/
+- Amazon RDS User Guide — MySQL: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html
+- Amazon RDS User Guide — Multi-AZ deployments: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html
+- Amazon RDS User Guide — Read replicas: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
+
