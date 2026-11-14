@@ -1,0 +1,58 @@
+{
+  product_id: 101,
+  product_name: "Classic Cotton T-Shirt",
+  category: "Clothing",
+  brand: "Heywizzle",
+  description: "A comfortable cotton T-shirt.",
+  price: 25.00,
+  currency: "NGN",
+  stock_quantity: 50,
+  attributes: {
+    size: ["S", "M", "L", "XL"],
+    colour: ["Black", "White", "Blue"],
+    material: "Cotton",
+    gender: "Unisex"
+  },
+  images: [
+    "tshirt-front.jpg",
+    "tshirt-back.jpg"
+  ],
+  is_active: true
+},{
+  product_id: 102,
+  product_name: "Smartphone X",
+  category: "Electronics",
+  brand: "TechBrand",
+  price: 10000.00,
+  currency: "NGN",
+  stock_quantity: 20,
+  attributes: {
+    screen_size: "6.5 inches",
+    storage_capacity: "256GB",
+    processor: "Octa-core",
+    battery_capacity: "5000mAh",
+    operating_system: "Android"
+  },
+  is_active: true
+},
+{
+  product_id: 103,
+  product_name: "Modern Office Chair",
+  category: "Furniture",
+  brand: "Heywizzle Home",
+  price: 150.00,
+  currency: "NGN",
+  stock_quantity: 15,
+  attributes: {
+    material: "Leather",
+    colour: "Black",
+    dimensions: {
+      height: "120cm",
+      width: "65cm",
+      depth: "60cm"
+    },
+    adjustable: true,
+    assembly_required: true
+  },
+  is_active: true
+}
