@@ -1,170 +1,113 @@
 # Heywizzle Limited – E-commerce Database Management System
 
-## Name:Adedayo Ayodele
-## Matric Number: 2026/A/MIT/0422
-## Course: Advanced Database System (MIT 8103)
+### Name:Adedayo Ayodele
+### Matric Number: 2026/A/MIT/0422
+### Course: Advanced Database System (MIT 8103)
+### Project Title: Design and Implementation of an E-commerce Database Management System
+### Selected Organisation: Heywizzle Limited
+## Github Link: aadedayo9382/advanced-database-portfolio-mit8103
 
 
 
-## 1. Project Overview**
+## 1. Introduction and Selected Organisation
+This project focuses on Heywizzle Limited, an e-commerce organisation that sells products to customers through an online platform. The organisation requires a reliable and scalable database system to manage its daily business operations, including product registration, customer information, order processing, payment management, inventory control and delivery tracking.
+The project explores how database technologies and concepts supports Heywizzle Limited's operational and business requirements. The database design considers the relationships between customers, products, orders, payments, deliveries and other relevant business entities. It also examines how relational databases, query optimisation, transaction management, NoSQL technologies and distributed database architectures can improve data integrity, performance, flexibility and availability.
+The five portfolios in this project progressively address the design, implementation and evaluation of database solutions for the organisation.
 
-** Company Name: Heywizzle Limited **
-** Organisation Type: E-commerce Platform **
-** Project: Database Management System Design and Implementation **
+## 2. Summary of the Five Portfolio Activities
+## Portfolio 1: Database Design and Modelling
+The first portfolio focused on analysing Heywizzle Limited's business requirements and translating them into a structured relational database design.
+The activity involved identifying the organisation's major data requirements, defining relevant entities and attributes, establishing primary and foreign keys, and modelling relationships using an Entity Relationship Diagram (ERD).
+The design considered essential business entities such as customers, products, orders, order items, payments, deliveries and inventory. Normalisation principles, including First Normal Form (1NF), Second Normal Form (2NF) and Third Normal Form (3NF), were applied to minimise unnecessary data duplication and improve data consistency.
+The resulting relational schema provides a foundation for storing and managing the organisation's e-commerce data while maintaining referential integrity through appropriate constraints and relationships.
 
-### Heywizzle Limited is an e-commerce company that operates an online platform where customers can browse products, place orders, make payments, and track deliveries. The organisation requires a well-structured and efficient database management system to manage its daily business operations and maintain accurate records of its products, customers, orders, payments, inventory, and delivery activities.
+## Key outcomes:
+-	Identified and modelled the main business entities.
+-	Developed an Entity Relationship Diagram.
+-	Applied database normalisation principles.
+-	Defined primary keys, foreign keys and integrity constraints.
+-	Produced a relational database schema based on the case study.
 
-The database system will serve as the central repository for the organisation's operational data, ensuring data accuracy, consistency, security, and accessibility for authorised users. It will support essential business processes, including adding new products, managing product attributes, updating stock quantities, processing customer orders, recording payments, and tracking deliveries.
+## Portfolio 2: Query Processing and Optimisation
+The second portfolio explored how database queries are processed and how their performance can be improved using MySQL.
+Using the Heywizzle Limited database scenario, the activity examined SQL operations for retrieving and manipulating business data. Queries covered product information, customer records, orders, payments and inventory.
+The portfolio also explored joins, aggregate functions, filtering, grouping and views to generate useful business information. Query execution plans and indexing were considered to understand how MySQL retrieves records and how suitable indexes can reduce unnecessary data scanning.
+The exercise demonstrated the importance of writing efficient SQL queries and selecting appropriate indexing strategies, particularly as the organisation's customer, product and transaction records grow.
 
-## 2. Nature of the Business and Database System
+## Key outcomes: 
+-	Developed SQL queries for common e-commerce operations.
+-	Applied joins, filtering, grouping and aggregate functions.
+-	Explored views for presenting business information.
+-	Examined query execution plans using MySQL.
+-	Investigated indexing and query optimisation techniques.
 
-Heywizzle Limited operates within the e-commerce industry, providing an online marketplace for buying and selling products.
+## Portfolio 3: Transactions and Concurrency
+The third portfolio examined transaction management and concurrency control using MySQL. It focused on maintaining data accuracy and consistency when multiple users perform operations simultaneously.
+For Heywizzle Limited, transaction management is particularly important when customers place orders, make payments or purchase products with limited stock availability.
+The portfolio explored the ACID properties: Atomicity, Consistency, Isolation and Durability. It also considered transaction operations such as START TRANSACTION, COMMIT and ROLLBACK, alongside locking mechanisms and isolation levels.
+A practical example involved stock reservation during order processing. The objective was to prevent multiple customers from successfully purchasing the same limited stock quantity. Concurrency scenarios, including simultaneous stock updates, locking behaviour and potential deadlocks, were also considered.
 
-The proposed database management system will support the company's business activities by storing, organising, retrieving, and managing information generated through its online platform.
-
-The database will be designed to handle structured business information while supporting efficient query processing, transaction management, concurrency control, and advanced data models.
-
-## 3. Project Objectives
-
-The main objectives of the project are to:
-- Design and implement a reliable database system for Heywizzle Limited.
-- Ensure efficient storage and retrieval of organisational data.
-- Maintain data accuracy, consistency, and integrity.
-- Support secure customer ordering and payment operations.
-- Improve inventory and delivery management.
-- Optimise database queries for better performance.
-- Understand transaction management and concurrency control.
-- Explore the application of NoSQL databases and advanced data models.
-- Investigate distributed and cloud database technologies.
-
-
-## 4. Users of the Database
-
-The database system will be accessed by different categories of users, depending on their responsibilities within the organisation.
-
-- Customers: Browse products, manage their accounts, place orders, make payments, and track deliveries.
--  System Administrators: Manage user accounts, maintain database security, and oversee system operations.
--  Inventory Managers: Add products, update product information, manage product attributes, and monitor stock levels.
--  Order Management Staff: View customer orders, process orders, and update order statuses.
--  Finance and Payment Personnel: Monitor payment records, verify transactions, and manage payment information.
--  Delivery Personnel: Access delivery records and update delivery statuses.
--  Database Administrators: Manage database performance, backups, security, transactions, and data integrity.
-_______________________________________________________________________________________________________________
-
-## 5. Major Data to Be Stored
-
-The database will contain the following major categories of information:
-
-- Products: Product names, descriptions, prices, categories, and availability.
-- Product Attributes: Product sizes, colours, brands, specifications, and other characteristics.
-- Customers: Customer names, email addresses, phone numbers, account details, and delivery addresses.
-- Orders: Order references, customer details, order dates, quantities, and order statuses.
-- Payments: Payment references, amounts, payment methods, dates, and transaction statuses.
-- Inventory/Stock: Product quantities, stock availability, and stock updates.
-- Delivery Records: Delivery addresses, tracking references, delivery dates, delivery personnel, and delivery statuses.
-
-
-## 6. Key Database Operations
-
-The database management system will support the following major operations:
-
--  Product Management: Add new products, edit product details, assign categories, and manage product attributes.
--  Customer Management: Register customers, update customer information, and retrieve customer records.
--  Order Processing: Create customer orders, retrieve order details, update order statuses, and manage order records.
--  Inventory Management: Update stock quantities, monitor product availability, and adjust inventory after purchases.
--  Payment Management: Record payments, verify payment transactions, and update payment statuses.
--  Delivery Management: Create delivery records, assign deliveries, update delivery statuses, and track customer orders.
--  Data Retrieval and Reporting: Execute queries to retrieve business information and generate reports on products, customers, sales, payments, and deliveries.
-
-## 7. Project Portfolios
-
-The project will be implemented through five major portfolios, each focusing on an important aspect of database management and administration.
-
-### Portfolio 1: Database Design and Modelling
-
-This portfolio will focus on designing and modelling the database structure for Heywizzle Limited.
-
-Activities will include:
-
-- Identifying entities and their attributes.
-- Establishing relationships between database entities.
-- Developing Entity Relationship Diagrams (ERDs).
-- Identifying primary and foreign keys.
-- Applying database normalisation techniques.
-- Creating relational database schemas.
-- Defining constraints to maintain data integrity.
-
-
-### Portfolio 2: Query Processing and Optimisation
-
-This portfolio will examine how database queries are written, executed, and optimised to improve performance.
-
-Activities will include:
-
-- Writing SQL queries to insert, retrieve, update, and delete records.
-- Performing queries involving multiple tables using JOIN operations.
-- Using aggregate functions and subqueries.
-- Creating database views.
-- Analysing query execution plans.
-- Applying indexing techniques.
-- Optimising queries to improve database performance.
-
-### Portfolio 3: Transactions and Concurrency
-
-This portfolio will focus on maintaining database consistency and reliability when multiple users perform operations simultaneously.
-
-Activities will include:
-
-- Implementing database transactions.
-- Applying ACID properties (Atomicity, Consistency, Isolation, and Durability).
-- Managing concurrent customer orders.
-- Preventing stock inconsistencies during simultaneous purchases.
-- Implementing transaction commit and rollback operations.
-- Exploring locking mechanisms and isolation levels.
-- Managing potential transaction conflicts and deadlocks.
-
+## Key outcomes: 
+-	Examined ACID transaction properties.
+-	Applied MySQL transaction control statements.
+-	Explored commit and rollback operations.
+-	Investigated isolation levels and locking mechanisms.
+-	Considered concurrent stock reservation and deadlock handling.
 
 ## Portfolio 4: NoSQL and Advanced Data Models
+The fourth portfolio explored NoSQL databases and advanced data modelling techniques, focusing on the flexibility required by modern e-commerce platforms.
+Unlike traditional relational databases, document-oriented databases can store records with varying structures. This is useful for Heywizzle Limited because different product categories may have different attributes. For example, electronic products may require specifications such as processor type and memory capacity, while clothing products may require size, colour and material.
+The portfolio examined document-oriented data models, flexible product document structures and key-value database concepts. It also compared relational and NoSQL approaches, considering their strengths, limitations and suitability for different business requirements.
+The discussion highlighted how a relational database can remain suitable for structured transactional information, while a document database such as MongoDB can support flexible product catalogues and category-specific attributes.
 
-This portfolio will explore the use of NoSQL databases and advanced data models to support flexible and scalable data storage.
+## Key outcomes: 
+-	Explored document-oriented database concepts.
+-	Examined flexible product document structures.
+-	Considered key-value and other NoSQL data models.
+-	Compared relational and NoSQL database approaches.
+-	Evaluated the suitability of different data models for e-commerce operations.
 
-Activities will include:
-- Exploring document-oriented databases.
-- Modelling product information using flexible document structures.
-- Storing product attributes that may vary between product categories.
-- Exploring key-value and other NoSQL data models.
-- Comparing relational and NoSQL database approaches.
-- Examining the benefits of NoSQL databases for scalability and flexibility.
+## Portfolio 5: Distributed and Cloud Databases
+The fifth portfolio examined how distributed and cloud database technologies could support the growth of Heywizzle Limited.
+As the organisation expands, its database may need to support increased customer traffic, larger product catalogues and higher transaction volumes. A single database server may eventually become a performance or availability limitation.
+The portfolio explored database replication, sharding, availability, consistency and cloud deployment. It considered a primary database with read replicas to distribute read workloads, while write operations remain coordinated through the primary database.
+It also examined how sharding or partitioning could distribute large datasets, and how cloud database services such as Amazon Relational Database Service (Amazon RDS) for MySQL could support managed database deployment, backups and availability.
+The activity considered important operational factors such as replication lag, recovery objectives, fault tolerance and the trade-offs between consistency, availability and performance.
 
-## Portfolio 5: Distributed and Cloud Database Exercise
+## Key outcomes: 
+-	Examined distributed database architecture.
+-	Explored primary and read-replica replication.
+-	Considered sharding and data partitioning.
+-	Evaluated availability, consistency and fault tolerance.
+-	Investigated cloud database deployment using Amazon RDS for MySQL.
 
-This portfolio will investigate how database systems can operate in distributed and cloud-based environments.
+## 3. GitHub Repository and Practical Evidence
+The source code, SQL scripts, screenshot, database designs and portfolio documentation are available through the project's GitHub repository.
+GitHub Repository: aadedayo9382/advanced-database-portfolio-mit8103
 
-Activities will include:
-- Exploring distributed database concepts.
-- Understanding database replication and synchronisation.
-- Examining data partitioning and sharding.
-- Exploring cloud database deployment.
-- Investigating database availability, scalability, and fault tolerance.
-- Evaluating cloud database solutions for supporting Heywizzle Limited's e-commerce operations.
+## 4. Test Tools
+The following tools were used to carry out various tests described in the project 
+- 1.	PhpMyAdmin (Embedded XAMMP): This was used to carry out all Mysql related tests
+- 2.	MongoDB (https://cloud.mongodb.com/): This was used to carry out all NoSql related tests
+- 3.	Snipping Tool: This was used to take screenshots for the different tests
+
+## 5. Individual Reflection
+Working on the five portfolios has improved my understanding of how database systems support real-world business operations. Using Heywizzle Limited as the case study helped me connect database concepts with practical e-commerce requirements.
+The database design activity demonstrated the importance of understanding business requirements before creating database tables. Developing the relational model and applying normalisation principles helped me appreciate how good database design reduces duplication and maintains data integrity.
+The query optimisation portfolio improved my understanding of how database performance can be affected by query structure, indexing and execution plans. I also gained a better appreciation of the importance of writing efficient queries as the volume of business data increases.
+The NoSQL portfolio broadened my understanding of alternative database models and demonstrated why flexible document structures can be useful when product attributes differ across categories. Finally, the distributed database portfolio introduced important considerations around scalability, replication, availability and cloud deployment.
+Overall, the activities strengthened my understanding of database design, implementation, optimisation and deployment. They also helped me recognise that selecting a database solution requires balancing performance, consistency, flexibility, availability, cost and future scalability.
+
+## 5. References
+The following technical documentation provides supporting information for the portfolio activities:
+- 1.	Oracle. MySQL 8.4 Reference Manual. https://dev.mysql.com/doc/refman/8.4/en/
+- 2.	Oracle. MySQL Optimisation. https://dev.mysql.com/doc/refman/8.4/en/optimization.html
+- 3.	Oracle. MySQL InnoDB Transaction Model. https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-model.html
+- 4.	MongoDB. MongoDB Manual – Documents. https://www.mongodb.com/docs/manual/core/document/
+- 5.	MongoDB. Data Modelling. https://www.mongodb.com/docs/manual/data-modeling/
+- 6.	Amazon Web Services. Amazon RDS for MySQL. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html
+- 7.	Amazon Web Services. Working with MySQL Read Replicas. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
 
 
-
-# 8. Expected Outcome
-
-At the end of this project, a functional database solution will be designed to support the major operational requirements of Heywizzle Limited.
-
-The resulting database model will provide a foundation for managing the company's e-commerce activities efficiently while supporting future business growth and technological expansion.
-
-## 14. References
-- MySQL Reference Manual — Replication: https://dev.mysql.com/doc/refman/8.4/en/replication.html
-- MySQL Reference Manual — Partitioning: https://dev.mysql.com/doc/refman/8.4/en/partitioning.html
-- MySQL Reference Manual — InnoDB and Transactions: https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-model.html
-- MongoDB. *MongoDB Manual – Documents*. https://www.mongodb.com/docs/manual/core/document/
-- MongoDB. *MongoDB Manual – Data Modeling*. https://www.mongodb.com/docs/manual/data-modeling/
-- MongoDB. *MongoDB Manual – Schema Validation*. https://www.mongodb.com/docs/manual/core/schema-validation/
-- MongoDB. *MongoDB Manual – Sharding*. https://www.mongodb.com/docs/manual/sharding/
-- Amazon RDS User Guide — MySQL: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html
-- Amazon RDS User Guide — Multi-AZ deployments: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html
-- Amazon RDS User Guide — Read replicas: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
-
+## 6. Declaration of AI Tool Usage
+AI tools, including ChatGPT, were used as supporting resources during the preparation of this portfolio. Their assistance included explaining database concepts, organising documentation, improving technical explanations and reviewing the structure and clarity of written content.
