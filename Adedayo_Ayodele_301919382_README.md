@@ -1,10 +1,10 @@
 # Heywizzle Limited – E-commerce Database Management System
 
-## Name:Adedayo Ayodele
-## Matric Number: 2026/A/MIT/0422
-## Course: Advanced Database System (MIT 8103)
-## Project Title: Design and Implementation of an E-commerce Database Management System
-## Selected Organisation: Heywizzle Limited
+### Name:Adedayo Ayodele
+### Matric Number: 2026/A/MIT/0422
+### Course: Advanced Database System (MIT 8103)
+### Project Title: Design and Implementation of an E-commerce Database Management System
+### Selected Organisation: Heywizzle Limited
 ## Github Link: aadedayo9382/advanced-database-portfolio-mit8103
 
 
@@ -21,7 +21,7 @@ The activity involved identifying the organisation's major data requirements, de
 The design considered essential business entities such as customers, products, orders, order items, payments, deliveries and inventory. Normalisation principles, including First Normal Form (1NF), Second Normal Form (2NF) and Third Normal Form (3NF), were applied to minimise unnecessary data duplication and improve data consistency.
 The resulting relational schema provides a foundation for storing and managing the organisation's e-commerce data while maintaining referential integrity through appropriate constraints and relationships.
 
-*** Key outcomes: ***
+## Key outcomes:
 -	Identified and modelled the main business entities.
 -	Developed an Entity Relationship Diagram.
 -	Applied database normalisation principles.
@@ -34,7 +34,7 @@ Using the Heywizzle Limited database scenario, the activity examined SQL operati
 The portfolio also explored joins, aggregate functions, filtering, grouping and views to generate useful business information. Query execution plans and indexing were considered to understand how MySQL retrieves records and how suitable indexes can reduce unnecessary data scanning.
 The exercise demonstrated the importance of writing efficient SQL queries and selecting appropriate indexing strategies, particularly as the organisation's customer, product and transaction records grow.
 
-*** Key outcomes: ***
+## Key outcomes: 
 -	Developed SQL queries for common e-commerce operations.
 -	Applied joins, filtering, grouping and aggregate functions.
 -	Explored views for presenting business information.
@@ -47,7 +47,7 @@ For Heywizzle Limited, transaction management is particularly important when cus
 The portfolio explored the ACID properties: Atomicity, Consistency, Isolation and Durability. It also considered transaction operations such as START TRANSACTION, COMMIT and ROLLBACK, alongside locking mechanisms and isolation levels.
 A practical example involved stock reservation during order processing. The objective was to prevent multiple customers from successfully purchasing the same limited stock quantity. Concurrency scenarios, including simultaneous stock updates, locking behaviour and potential deadlocks, were also considered.
 
-*** Key outcomes: ***
+## Key outcomes: 
 -	Examined ACID transaction properties.
 -	Applied MySQL transaction control statements.
 -	Explored commit and rollback operations.
@@ -60,7 +60,7 @@ Unlike traditional relational databases, document-oriented databases can store r
 The portfolio examined document-oriented data models, flexible product document structures and key-value database concepts. It also compared relational and NoSQL approaches, considering their strengths, limitations and suitability for different business requirements.
 The discussion highlighted how a relational database can remain suitable for structured transactional information, while a document database such as MongoDB can support flexible product catalogues and category-specific attributes.
 
-*** Key outcomes: ***
+## Key outcomes: 
 -	Explored document-oriented database concepts.
 -	Examined flexible product document structures.
 -	Considered key-value and other NoSQL data models.
@@ -74,7 +74,7 @@ The portfolio explored database replication, sharding, availability, consistency
 It also examined how sharding or partitioning could distribute large datasets, and how cloud database services such as Amazon Relational Database Service (Amazon RDS) for MySQL could support managed database deployment, backups and availability.
 The activity considered important operational factors such as replication lag, recovery objectives, fault tolerance and the trade-offs between consistency, availability and performance.
 
-*** Key outcomes: ***
+## Key outcomes: 
 -	Examined distributed database architecture.
 -	Explored primary and read-replica replication.
 -	Considered sharding and data partitioning.
