@@ -108,5 +108,6 @@ The following technical documentation provides supporting information for the po
 - 6.	Amazon Web Services. Amazon RDS for MySQL. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html
 - 7.	Amazon Web Services. Working with MySQL Read Replicas. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
 
+
 ## 6. Declaration of AI Tool Usage
 AI tools, including ChatGPT, were used as supporting resources during the preparation of this portfolio. Their assistance included explaining database concepts, organising documentation, improving technical explanations and reviewing the structure and clarity of written content.

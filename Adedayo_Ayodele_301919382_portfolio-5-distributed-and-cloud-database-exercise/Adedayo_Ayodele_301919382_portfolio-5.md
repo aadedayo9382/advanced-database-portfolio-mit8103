@@ -2,270 +2,434 @@
 
 ## 1. Introduction
 
-Heywizzle Limited is an e-commerce business that manages product information, customer accounts, orders, payments, stock levels, and delivery records. As the business grows, its database must support increasing traffic and data volumes while keeping information accurate and available.
+Heywizzle Limited operates an e-commerce database that stores product, customer, order, payment, stock, and delivery information. As customer numbers, product records, and online transactions increase, a single database server may experience higher workloads and become a point of failure.
 
-This portfolio investigates how distributed and cloud-based database systems can support Heywizzle Limited's operations. It builds on the earlier portfolios, which use **MySQL** for the relational database, query processing and optimisation, and transaction/concurrency exercises.
+This portfolio examines how Heywizzle Limited could use distributed and cloud database technologies to improve database availability, scalability, and resilience while preserving accurate business transactions. It builds on the earlier portfolios, which use **MySQL** as the relational database platform.
 
-The portfolio focuses on distributed database concepts, replication and synchronisation, partitioning and sharding, cloud deployment, availability, scalability, and fault tolerance. The examples are conceptual and illustrative; they do not imply that Heywizzle Limited has already deployed a production cloud database.
+This document presents a case-study design and deployment exercise. Configuration examples are proposed test configurations; they should only be described as implemented or tested after the relevant work has actually been carried out.
 
 ## 2. Aim and Objectives
 
 ### Aim
 
-To evaluate how distributed and cloud database technologies can improve the scalability, availability, and resilience of Heywizzle Limited's e-commerce database.
+To design and evaluate a distributed/cloud database approach for Heywizzle Limited, demonstrating how replication, sharding, availability, consistency, and cloud deployment can support its e-commerce operations.
 
 ### Objectives
 
-- Explain distributed database concepts and their relevance to e-commerce.
-- Explore database replication and synchronisation approaches.
-- Examine partitioning and sharding strategies for growing datasets.
-- Investigate cloud database deployment options.
-- Evaluate availability, scalability, backup, recovery, and fault-tolerance considerations.
-- Recommend a suitable database architecture for Heywizzle Limited.
+- Explain why a distributed or cloud database may be required by Heywizzle Limited.
+- Design a primary-and-replica database arrangement.
+- Examine how replication keeps database copies synchronised.
+- Propose a suitable partitioning or sharding strategy.
+- Explain availability, fault tolerance, and recovery.
+- Evaluate consistency requirements for orders, payments, and stock.
+- Identify practical deployment evidence that can demonstrate the proposed solution.
 
-## 3. Heywizzle Limited's Database Requirements
+## 3. Case Study and Database Workload
 
-The database supports the following core entities and operations:
-
-| Data area | Example information | Operational requirement |
+| Database area | Example data | Important business operation |
 |---|---|---|
-| Products | Product ID, name, category, price, attributes | Fast product browsing and search |
-| Customers | Customer ID, contact details, account information | Secure access and reliable updates |
-| Orders | Order ID, customer, items, totals, status | Consistent order creation and updates |
-| Payments | Payment ID, order, amount, payment status | Accurate and auditable payment records |
-| Stock | Product ID, available quantity, reservations | Prevent overselling during concurrent purchases |
-| Deliveries | Delivery ID, order, address, tracking status | Timely delivery updates |
+| Products | Product ID, name, category, price, attributes | Browse and search the catalogue |
+| Customers | Customer ID, name, email, contact details | Register and manage customer accounts |
+| Orders | Order ID, customer ID, order date, status, total | Place and track orders |
+| Order items | Order ID, product ID, quantity, unit price | Record products purchased |
+| Payments | Payment ID, order ID, amount, payment status | Record payment outcomes |
+| Stock | Product ID, available quantity | Reserve and update stock |
+| Deliveries | Delivery ID, order ID, tracking status | Track fulfilment and delivery |
 
-The system needs to preserve transactional correctness, especially when an order is placed and stock is reserved. Replication and distribution must not introduce inconsistent stock counts, duplicate payments, or conflicting order statuses.
+Product browsing and catalogue searches generate frequent reads. Checkout, payment updates, and stock reservations generate writes that must be accurate. Historical order reports may involve large datasets but do not normally require the same response time as checkout.
 
-## 4. Distributed Database Concepts
+A suitable design should scale read-heavy workloads without weakening the consistency of critical transactions.
 
-A distributed database stores data across multiple computers or database nodes that communicate over a network. Depending on the architecture, the nodes may store copies of the same data or different portions of the dataset.
+## 4. Proposed Distributed Database Architecture
 
-### 4.1 Centralised and distributed databases
+### 4.1 Architecture overview
 
-A centralised database stores the primary dataset on one database server. It is straightforward to administer, but that server can become a performance bottleneck or a single point of failure.
+The proposed design uses a MySQL-compatible primary database and one or more read replicas. The primary handles transactional writes, while replicas can serve suitable read-only requests. The database is hosted in a private cloud network and accessed by the e-commerce application through a controlled connection.
 
-A distributed database can spread data or database responsibilities across several nodes. This can improve read capacity, resilience, and geographic reach, but adds complexity around consistency, network failures, monitoring, and administration.
+```text
+                 Customers / Web Browser
+                           |
+                           v
+                  Heywizzle E-commerce
+                       Application
+                           |
+                    Database Connection
+                           |
+                           v
+                +----------------------+
+                |   MySQL Primary      |
+                |  Read and Write      |
+                | Products, Customers  |
+                | Orders, Payments     |
+                | Stock, Deliveries    |
+                +----------------------+
+                           |
+                    Replication Stream
+                           |
+              +------------+------------+
+              |                         |
+              v                         v
+       +---------------+         +---------------+
+       | Read Replica 1|         | Read Replica 2|
+       | Catalogue reads|        | Reports/reads  |
+       +---------------+         +---------------+
 
-### 4.2 Common distributed database architectures
+        Private cloud network, monitoring,
+        automated backups and recovery
+```
 
-- **Primary-replica architecture:** One primary node accepts writes while one or more replicas serve reads or provide failover.
-- **Multi-primary architecture:** Multiple nodes can accept writes. Conflict detection and resolution are required when changes overlap.
-- **Shared-nothing architecture:** Each node has its own CPU, memory, and storage, with data distributed across nodes.
-- **Federated database:** Multiple independent databases are presented through a common access layer while retaining some local autonomy.
+**Figure 1: Proposed primary-and-replica architecture for Heywizzle Limited.**
 
-For Heywizzle Limited, a primary database with read replicas is a practical starting point. It keeps order and stock writes controlled while allowing read-heavy product browsing and reporting workloads to scale.
+### 4.2 Roles of the database nodes
+
+| Component | Responsibility |
+|---|---|
+| Primary database | Accepts inserts, updates, and deletes for business transactions |
+| Read replica 1 | Serves suitable product catalogue and other read-heavy requests |
+| Read replica 2 | Serves reporting or additional read workloads, if required |
+| Backup/recovery service | Provides backup retention and restoration capability |
+| Monitoring service | Tracks database health, resource usage, connections, and replication delay |
+
+The application must distinguish read and write operations. Checkout, stock reservation, payment status changes, and other critical updates should use the primary database. Reads that can tolerate a short delay may use a replica.
 
 ## 5. Database Replication and Synchronisation
 
-Replication copies database data from one node to another. It can improve read performance and help maintain service during a node failure. Replication is not a substitute for backups: accidental deletion or corruption can also be replicated.
+Replication copies database changes from a source database to one or more replica databases. It can improve read capacity and support recovery or failover arrangements.
 
-### 5.1 Replication approaches
+### 5.1 Replication options
 
-| Approach | Description | Potential use at Heywizzle |
+| Replication type | Explanation | Suitability for Heywizzle |
 |---|---|---|
-| Synchronous replication | A write is acknowledged after required replica confirmation | Stronger durability for selected critical operations, subject to latency and configuration |
-| Asynchronous replication | The primary acknowledges a write before replicas necessarily receive it | Read scaling and disaster-recovery replicas where some replication lag is acceptable |
-| Semi-synchronous replication | The primary waits for confirmation from at least one replica, depending on configuration | A balance between durability and response time |
+| Asynchronous | The primary commits without waiting for a replica to confirm the change | Suitable for catalogue reads and reporting where a small delay is acceptable |
+| Semi-synchronous | The primary waits for acknowledgement from at least one replica, subject to configuration | May improve protection against losing recent transactions, with some latency cost |
+| Synchronous | A transaction is acknowledged only after required replicas confirm it | Offers stronger synchronisation but can increase latency and make writes dependent on replica/network availability |
 
-### 5.2 Replication and synchronisation considerations
+The exact replication modes and guarantees depend on the MySQL version and cloud service configuration. Managed services may implement replication and failover differently from manually configured MySQL servers.
 
-Replication may be implemented using database-native mechanisms or managed cloud database services. Important considerations include:
+### 5.2 Replication flow
 
-- **Replication lag:** A replica may not immediately contain the latest committed changes.
-- **Read-after-write behaviour:** A customer should see their newly placed order or updated account details without being misled by stale replica data.
-- **Failover:** If the primary becomes unavailable, a replica may be promoted. Applications must reconnect safely.
-- **Conflict handling:** Multi-primary systems need rules for resolving simultaneous updates.
-- **Monitoring:** Replication health and lag should be monitored and alerts configured.
+1. A customer places an order through the Heywizzle application.
+2. The application sends the order and stock updates to the primary database.
+3. The primary commits the transaction.
+4. The replication mechanism sends the changes to the replicas.
+5. A replica applies the changes and becomes available for suitable read requests.
+6. Monitoring checks replica health and replication delay.
 
-For example, product catalogue pages may tolerate small replica delays. However, stock reservation and payment confirmation should use a transactionally consistent write path rather than relying on a potentially stale read replica.
+### 5.3 Replication lag
+
+With asynchronous replication, a replica may temporarily contain older data. For example, a customer may place an order and immediately open the order history page. If that page reads from a lagging replica, the new order might not appear straight away.
+
+To reduce this risk:
+
+- Read a newly created order from the primary after checkout.
+- Route stock checks and other critical decisions to the primary.
+- Use replicas for data that can tolerate eventual consistency.
+- Monitor replication lag and stop routing suitable traffic to an unhealthy or delayed replica.
+- Do not assume that a successful write to the primary means every replica has already applied it.
+
+**Case-study decision:** Heywizzle should use the primary database for order, payment, and stock writes. Read replicas should be used for catalogue browsing and reporting only when their consistency requirements permit it.
 
 ## 6. Data Partitioning and Sharding
 
-Partitioning divides a dataset into smaller logical or physical parts. Sharding commonly refers to distributing those parts across different database servers or nodes.
+Partitioning divides a large table into smaller sections. Sharding distributes portions of a dataset across separate database servers or nodes. Sharding is a form of horizontal distribution and normally requires application-level or database-platform support to route queries to the correct shard.
 
-### 6.1 Partitioning strategies
+### 6.1 Partitioning options
 
-| Strategy | How it works | Heywizzle example |
+| Strategy | Description | Heywizzle example |
 |---|---|---|
-| Range partitioning | Records are grouped by ranges of a key | Orders partitioned by order date |
-| List partitioning | Records are grouped by specified values | Orders grouped by region or order status, where appropriate |
-| Hash partitioning | A hash function assigns records to partitions | Customer or order records distributed by ID |
-| Horizontal partitioning | Different rows are stored in different partitions | Orders divided by date or customer range |
-| Vertical partitioning | Different columns or groups of columns are separated | Frequently used product fields separated from large descriptions or media metadata |
+| Range | Divides rows according to ranges of values | Orders grouped by order date |
+| List | Divides rows according to specified values | Records grouped by an agreed region code |
+| Hash | Uses a hash function to distribute rows | Customer records distributed using customer ID |
+| Horizontal | Separates rows into groups | Different ranges of orders stored in different partitions |
+| Vertical | Separates columns into groups | Frequently accessed product details separated from large descriptive fields |
 
-### 6.2 Possible sharding key
+For historical orders, range partitioning by order date may make it easier to manage older records and support date-based queries. The design must take account of MySQL's rules for partitioning, indexes, keys, and foreign keys.
 
-A possible sharding key for order data is `order_id` or a customer-related identifier. The choice affects query routing and workload distribution.
+### 6.2 Proposed sharding approach
 
-A good sharding key should:
+If customer and order data eventually becomes too large for one database cluster, Heywizzle could distribute customers and their orders across multiple shards.
 
-- Distribute writes and storage reasonably evenly.
-- Avoid creating a heavily overloaded shard.
-- Support common application queries.
-- Minimise cross-shard transactions and joins.
-- Be stable and difficult to change.
+```text
+                 Heywizzle Application
+                           |
+                    Shard Router
+                           |
+             Hash(customer_id) mod 2
+                    /          \
+                   v            v
+          +-------------+  +-------------+
+          |   Shard 1   |  |   Shard 2   |
+          | Customers   |  | Customers   |
+          | Orders      |  | Orders      |
+          | Order Items |  | Order Items |
+          +-------------+  +-------------+
+```
 
-Sharding introduces operational complexity. Rebalancing data, maintaining global uniqueness, backing up multiple shards, and executing cross-shard queries all require careful planning. It should be considered when a single database instance and its read replicas no longer meet the required workload.
+For example, the application could calculate a shard number from the customer ID and route that customer's order-related data to the selected shard. This is a conceptual example; the hash function, shard count, routing mechanism, and key management must be designed and tested before implementation.
 
-## 7. Cloud Database Deployment
+Sharding considerations include:
 
-A cloud database is hosted on cloud infrastructure and can be provisioned, monitored, backed up, and scaled through cloud services. A managed relational database service can reduce the operational burden of maintaining database servers.
+- **Even distribution:** Avoid assigning most active customers to one shard.
+- **Query routing:** The application must know which shard contains the requested data.
+- **Cross-shard queries:** Reports covering all customers may need to query multiple shards.
+- **Transactions:** A transaction spanning multiple shards is more difficult to coordinate.
+- **Rebalancing:** Adding or removing shards may require moving existing records.
+- **Uniqueness:** IDs must remain unique across the distributed system.
 
-### 7.1 Deployment options
+**Case-study decision:** Sharding is not necessary for the initial design. Heywizzle should first consider indexing, query optimisation, vertical scaling, read replicas, and table partitioning. Sharding should be introduced only when measured workload or storage requirements justify the added complexity.
 
-| Option | Advantages | Considerations |
+## 7. Availability, Fault Tolerance, and Recovery
+
+### 7.1 Availability
+
+Availability describes whether the database service can respond to application requests when required. A database hosted on a single server may become unavailable if that server fails.
+
+A cloud database can improve availability through redundant infrastructure, health monitoring, and automated failover. For example, a managed relational database may support a standby database in another availability zone. The exact behaviour depends on the selected service and deployment configuration.
+
+### 7.2 Fault-tolerance scenarios
+
+| Failure scenario | Possible impact | Proposed response |
 |---|---|---|
-| Self-managed MySQL on a cloud virtual machine | High configuration control; familiar MySQL environment | The business manages patching, backups, failover, monitoring, and server maintenance |
-| Managed MySQL-compatible relational database | Managed backups, maintenance options, monitoring, and deployment features | Service limits, pricing, configuration, and provider-specific behaviour must be reviewed |
-| Cloud-native distributed relational database | Can offer automated distribution and high availability | May involve greater cost, migration effort, or compatibility differences |
-| Database-as-a-Service with read replicas | Easier read scaling and managed replica lifecycle | Replica lag and read/write routing still need application consideration |
+| Primary database failure | Application cannot complete database operations | Promote or fail over to a suitable standby/replica and reconnect the application |
+| Availability-zone outage | Database resources in the affected zone may be unavailable | Use a supported multi-zone deployment |
+| Network interruption | Application loses database connectivity | Use bounded retries, connection timeouts, and health checks |
+| Accidental data deletion | Business records may be lost or altered | Restore from backup or use point-in-time recovery |
+| Replica failure | Read capacity is reduced | Stop sending reads to the failed replica and restore or replace it |
+| Storage capacity reached | Writes may fail | Monitor storage and scale capacity before the limit is reached |
 
-### 7.2 Example cloud deployment
+### 7.3 Backup and recovery
 
-An illustrative deployment using a managed MySQL-compatible service could include:
+Replication is not a replacement for backup. If a user accidentally deletes an order on the primary, that deletion may also be replicated. Backups provide a separate recovery path.
 
-1. Deploy the database in a private network rather than exposing it directly to the public internet.
-2. Configure the application to connect through a controlled database endpoint.
-3. Use high-availability deployment across separate availability zones where supported and appropriate.
-4. Enable automated backups and define a retention period.
-5. Add read replicas for suitable read-heavy workloads.
-6. Store credentials securely and rotate them according to policy.
-7. Monitor database connections, CPU, storage, query latency, replication lag, and failover events.
-8. Test restoration and failover procedures.
+Heywizzle should enable automated backups, select an appropriate retention period, enable point-in-time recovery if supported and required, restrict backup access, test restoration periodically, and document who can authorise recovery.
 
-The exact cloud provider and service should be selected based on compatibility, availability requirements, budget, regional support, and operational skills.
+Two important recovery measurements are:
 
-## 8. Availability, Scalability, and Fault Tolerance
+- **Recovery Point Objective (RPO):** The maximum acceptable amount of data loss measured in time.
+- **Recovery Time Objective (RTO):** The maximum acceptable time to restore the service.
 
-### 8.1 Availability
+The business should agree suitable RPO and RTO values based on the impact of losing recent orders or being unable to process checkout. These values should be measured through recovery tests rather than assumed from a service description.
 
-Availability is the ability of the database service to respond to valid requests when required. High availability may be supported by redundant database nodes, health checks, automated failover, and deployment across availability zones.
+## 8. Consistency and Transactional Integrity
 
-### 8.2 Scalability
+Consistency means that database operations preserve the rules and relationships defined for the data. For Heywizzle, order, payment, and stock information must remain reliable even when several customers make purchases at the same time.
 
-- **Vertical scaling:** Increase the CPU, memory, or storage capacity of a database instance.
-- **Horizontal read scaling:** Add replicas to distribute read traffic.
-- **Horizontal write scaling:** Distribute writes across shards or nodes, usually with additional application and data-management complexity.
+### 8.1 Consistency requirements
 
-For Heywizzle, vertical scaling and read replicas are likely to be simpler initial options than sharding.
+| Operation | Required behaviour | Recommended database path |
+|---|---|---|
+| Product catalogue browsing | A small delay in displaying a product update may be acceptable | Read replica, where appropriate |
+| Customer profile update | Customer should see the latest update | Primary for write and immediate confirmation |
+| Order creation | Order and order items must be recorded consistently | Primary transaction |
+| Stock reservation | Concurrent purchases must not oversell available stock | Primary transaction with conditional update |
+| Payment status update | Status must be recorded accurately and duplicate processing prevented | Primary, with idempotent application workflow |
+| Historical reporting | Slightly delayed data may be acceptable | Read replica or reporting database |
 
-### 8.3 Fault tolerance
+### 8.2 MySQL stock reservation example
 
-Fault tolerance is the ability to continue operating, or recover within an acceptable period, after a component fails. Potential failures include database instance failure, availability-zone outage, network interruption, accidental deletion, and data corruption.
-
-A resilient design should combine:
-
-- Multi-zone database deployment or equivalent redundancy.
-- Automated failover where supported.
-- Automated backups and point-in-time recovery.
-- Periodic restore tests.
-- Application retry logic with bounded retries and idempotency.
-- Monitoring, alerting, and documented recovery procedures.
-
-**Important distinction:** High availability helps reduce service interruption. Backups help recover data. Replication can support availability and read scaling, but by itself does not protect against every form of data loss.
-
-## 9. Consistency and Transactional Integrity
-
-Heywizzle's order workflow requires related updates to be handled reliably. For example, creating an order and reserving stock should be coordinated so that two customers cannot successfully purchase the same final unit.
-
-A simplified MySQL transaction could be:
+The following SQL illustrates a conditional stock update. It assumes a `products` table with `product_id` and `stock_quantity` columns.
 
 ```sql
 START TRANSACTION;
 
--- Reserve stock only if sufficient quantity remains.
 UPDATE products
 SET stock_quantity = stock_quantity - 1
 WHERE product_id = 101
   AND stock_quantity >= 1;
 
--- The application must verify that exactly one row was updated.
--- It should create the order and order-item records only when
--- the stock reservation succeeds.
+-- Application must check ROW_COUNT().
+-- Continue creating the order only if exactly one row was updated.
 
 COMMIT;
 ```
 
-This is an illustrative fragment, not a complete checkout implementation. The application must check the affected-row count, handle failures with `ROLLBACK`, and ensure order creation, stock reservation, and payment processing follow a safe workflow. Payment-provider calls are normally handled with an idempotent application workflow rather than held inside a long-running database transaction.
+If no row is updated, the product may not exist or there may be insufficient stock. The application must handle this outcome and must not create a successful order for an item that was not reserved. If a later database operation in the checkout transaction fails, the application should roll back the transaction.
 
-In a distributed environment, the design should also consider:
+This is an illustrative SQL fragment, not a complete checkout implementation. Production code must also handle transaction errors, order-item insertion, unique identifiers, payment-provider responses, and safe retries. Payment-provider requests should use idempotency controls so a retry does not charge a customer twice.
 
-- Whether a transaction is confined to one database node or crosses shards.
-- Whether reads are served from the primary or a replica.
-- How retries avoid duplicate orders or payments.
-- How the application responds when a commit succeeds but the connection drops before the response is received.
+### 8.3 Consistency trade-off
 
-## 10. Security and Data Protection
+A primary-and-asynchronous-replica design improves read scalability but can return stale data from replicas. Using the primary for critical reads and writes reduces this risk. Stronger synchronisation can improve consistency guarantees but may increase response time and make writes dependent on network and replica availability.
 
-A cloud database deployment should include the following controls:
+For Heywizzle, transactional accuracy for stock, orders, and payments is more important than distributing every read across every database node.
 
-- Private network access and restrictive firewall/security-group rules.
-- Encryption in transit using TLS and encryption at rest.
-- Least-privilege database accounts for application and administration tasks.
-- Secure credential storage; credentials should not be committed to source control.
-- Auditing and monitoring of privileged access and important database events.
-- Backup retention and recovery controls appropriate to business requirements.
-- Protection of customer and payment-related data in accordance with applicable legal and organisational requirements.
+## 9. Cloud Database Deployment Proposal
 
-Payment card details should be handled by a compliant payment provider where possible; Heywizzle should avoid storing sensitive card data unless it has a justified, compliant design.
+### 9.1 Recommended deployment option
 
-## 11. Evaluation of Cloud Database Solutions for Heywizzle Limited
+A managed MySQL-compatible relational database is recommended as the starting point. It retains compatibility with the MySQL database used in earlier portfolios while reducing the amount of database infrastructure Heywizzle must manage.
 
-A managed MySQL-compatible relational database is a strong candidate because the existing coursework database is based on MySQL and the core operations depend on relational integrity and transactions.
+An example implementation could use **Amazon RDS for MySQL**. Other managed MySQL-compatible services could also be evaluated.
 
-### Benefits
+### 9.2 Proposed deployment steps
 
-- Reduced responsibility for database server maintenance.
-- Managed backup and monitoring capabilities, depending on the service.
-- Options for high availability and read replicas.
-- Ability to scale compute and storage as demand increases.
-- Familiar SQL and relational data modelling.
+1. Create or select a cloud account and deployment region.
+2. Create a private virtual network and database subnets.
+3. Provision a managed MySQL database instance.
+4. Restrict database access to the application environment and authorised administrators.
+5. Create the Heywizzle database and apply the existing relational schema.
+6. Configure automated backups and suitable retention.
+7. Configure high availability, such as a supported Multi-AZ deployment, if required by the service objectives and budget.
+8. Configure a read replica if read traffic justifies it.
+9. Store database credentials in a secure secrets-management service.
+10. Configure application connection settings and test connectivity.
+11. Enable monitoring and alerts for CPU, storage, connections, query performance, and replica lag.
+12. Test backup restoration and the failover procedure.
 
-### Limitations and risks
+### 9.3 Illustrative cloud deployment layout
 
-- Managed services may cost more than a small self-managed server.
-- Provider-specific features can increase migration complexity.
-- Replicas can return stale data if replication is asynchronous.
-- Failover may interrupt active connections.
-- Sharding and distributed transactions add significant complexity.
-- Cloud access, credentials, configuration, and backups must be secured.
+```text
+                    Internet
+                       |
+                Web Application
+                       |
+              Application/API Layer
+                       |
+             Private Network Connection
+                       |
+             +---------------------+
+             | Managed MySQL       |
+             | Primary Database    |
+             +---------------------+
+                       |
+                 Replication
+                       |
+             +---------------------+
+             | Read Replica        |
+             +---------------------+
 
-### Recommendation
+             Cloud monitoring
+             Automated backups
+             Recovery procedures
+             Secure credentials
+```
 
-Heywizzle Limited should begin with a managed MySQL-compatible relational database configured for private access, automated backups, monitoring, and high availability appropriate to its service requirements. The primary database should handle transactional writes for orders, payments, and stock reservations. Read replicas can be introduced for catalogue browsing and reporting where eventual consistency is acceptable.
+**Figure 2: Illustrative cloud deployment for Heywizzle Limited.**
 
-The business should adopt partitioning when table size or query performance justifies it, and consider sharding only after monitoring shows that vertical scaling and read replicas are insufficient. This staged approach preserves the benefits of MySQL while avoiding premature distributed-system complexity.
+The database should not be publicly accessible unless there is a specific, justified requirement and appropriate security controls. Application-to-database traffic should use encrypted connections where supported.
 
-## 12. Practical Exercise and Evidence
+## 10. Deployment and Testing Evidence
 
-The following activities can be used to demonstrate the portfolio. They should be completed in a test environment, not against live customer or payment data.
+The assessment requires a distributed/cloud database discussion or setup based on the same case study. The following evidence can be collected from an actual test deployment or clearly labelled as a proposed design.
 
-- [ ] Draw a diagram showing the application, primary database, replica(s), and cloud network.
-- [ ] Explain which Heywizzle operations use the primary and which may use replicas.
-- [ ] Compare synchronous and asynchronous replication in terms of consistency, latency, and availability.
-- [ ] Choose a partitioning strategy for historical orders and justify the key.
-- [ ] Identify a possible sharding key and discuss its limitations.
-- [ ] Compare self-managed MySQL with a managed MySQL-compatible service.
-- [ ] Describe a failover scenario and how the application reconnects.
-- [ ] Define a backup and restore test, including a recovery objective.
-- [ ] Record the results of a test or simulation, including any limitations.
+| Evidence item | What to demonstrate | Suggested evidence |
+|---|---|---|
+| Cloud database deployment | A MySQL-compatible database has been provisioned, or a deployment plan has been documented | Cloud console screenshot or annotated architecture |
+| Database connectivity | Application or MySQL client can connect | Sanitised connection test output |
+| Replication | Changes on the primary appear on a replica | Primary and replica query results with timestamps |
+| Sharding/partitioning | A partition or shard strategy has been designed or tested | SQL definition, routing example, or design diagram |
+| Availability | How the service responds to a node or zone failure | Failover test notes or documented service configuration |
+| Consistency | Critical order and stock operations preserve business rules | Transaction test results |
+| Backup and recovery | A backup can be restored or a recovery procedure is documented | Restore test output or recovery plan |
+| Security | Database access is restricted and credentials are protected | Sanitised network/security configuration |
 
-### Suggested evidence
+### 10.1 Suggested replication demonstration
 
-1. Distributed database architecture diagram.
-2. Replication and synchronisation comparison table.
-3. Partitioning/sharding design and rationale.
-4. Cloud deployment configuration or annotated deployment plan.
-5. Backup, recovery, and failover test notes.
-6. Evaluation and recommendation for Heywizzle Limited.
+If two MySQL instances are available in a safe test environment:
 
-## 13. Conclusion
+1. Configure one instance as the source/primary and the second as a replica, following the instructions for the selected MySQL version.
+2. Configure the required replication user and secure connection.
+3. Start replication and verify its status using the replication status command appropriate to the MySQL version.
+4. Insert a clearly identifiable test product on the primary.
+5. Query the replica and confirm whether the record has arrived.
+6. Record any replication delay and explain whether the replication mode is synchronous or asynchronous.
+7. Remove the test data after completing the exercise, if appropriate.
 
-This portfolio has explored how distributed and cloud database technologies can support Heywizzle Limited as its e-commerce operations grow. Replication can improve read capacity and resilience, while partitioning and sharding can help manage larger datasets and workloads. Cloud database services can reduce infrastructure-management effort and provide capabilities for backups, monitoring, scaling, and high availability.
+Example test query:
 
-However, distribution introduces challenges involving consistency, replication lag, failover, network failures, and operational complexity. For Heywizzle Limited, a managed MySQL-compatible relational database with private networking, robust backups, and suitable high availability is a practical initial solution. Read replicas and partitioning can be added as demand grows, with sharding reserved for a demonstrated need.
+```sql
+INSERT INTO products
+    (product_id, product_name, stock_quantity)
+VALUES
+    (99001, 'Replication Test Product', 10);
 
+SELECT product_id, product_name, stock_quantity
+FROM products
+WHERE product_id = 99001;
+```
+
+Use column names and data types that match the actual Heywizzle schema. Do not run this example against production data. The appearance of the test record on a replica is evidence of replication only after the replication setup and test have actually been performed.
+
+### 10.2 Suggested partitioning demonstration
+
+The following is a conceptual MySQL example for a separate test table. MySQL partitioning has engine-specific restrictions, and the partitioning key must satisfy the relevant rules for primary and unique keys. Test the definition against the MySQL version being used before claiming it works.
+
+```sql
+CREATE TABLE order_archive_test (
+    order_id BIGINT NOT NULL,
+    order_date DATE NOT NULL,
+    customer_id BIGINT NOT NULL,
+    order_total DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (order_id, order_date)
+)
+PARTITION BY RANGE (YEAR(order_date)) (
+    PARTITION p_before_2025 VALUES LESS THAN (2025),
+    PARTITION p_2025 VALUES LESS THAN (2026),
+    PARTITION p_2026 VALUES LESS THAN (2027),
+    PARTITION p_future VALUES LESS THAN MAXVALUE
+);
+```
+
+This demonstrates date-based range partitioning. It is a test design, not a replacement for the existing Heywizzle orders table. A production design should be validated against the real schema, query workload, retention requirements, and MySQL partitioning limitations.
+
+### 10.3 Suggested consistency test
+
+In a test database:
+
+1. Set a product's stock quantity to one.
+2. Attempt two concurrent stock reservations for that product.
+3. Confirm that only one transaction successfully reserves the final unit.
+4. Confirm that the stock quantity does not become negative.
+5. Record the SQL statements, affected-row counts, and final stock value.
+
+This test builds on the transaction and concurrency concepts covered in Portfolio 3.
+
+### 10.4 Evidence recording template
+
+Complete this table after carrying out the relevant tests:
+
+| Test | Expected result | Actual result | Status |
+|---|---|---|---|
+| Database connection | Authorised client connects successfully | [Record result] | [Pass/Fail/Not tested] |
+| Replication | Test record appears on replica | [Record result] | [Pass/Fail/Not tested] |
+| Partitioning | Test table is created and queries return correct records | [Record result] | [Pass/Fail/Not tested] |
+| Stock consistency | Only valid stock reservations succeed | [Record result] | [Pass/Fail/Not tested] |
+| Backup restoration | Database is restored with expected data | [Record result] | [Pass/Fail/Not tested] |
+| Availability/failover | Application recovers according to configured procedure | [Record result] | [Pass/Fail/Not tested] |
+
+Do not mark a test as passed unless it has been executed and the result recorded. If a cloud environment is not available, label the architecture, SQL, and recovery steps as a proposed design or simulation.
+
+## 11. Evaluation and Recommendation
+
+| Approach | Main benefit | Main limitation | Recommendation |
+|---|---|---|---|
+| Single MySQL instance | Simple and familiar | Limited resilience and potential capacity bottleneck | Suitable for development or an early low-volume system |
+| Managed MySQL with high availability | Managed operations and improved availability | Higher cost and provider-specific configuration | Recommended starting production approach |
+| Primary with read replicas | Distributes read workloads | Replica lag and additional monitoring | Add when read traffic increases |
+| Table partitioning | Helps manage selected large tables | Requires careful schema and query design | Consider for large historical order tables |
+| Sharding | Distributes data and writes across nodes | More complex transactions, routing, and maintenance | Defer until justified by measured scale |
+
+### Recommendation for Heywizzle Limited
+
+Heywizzle should adopt a staged approach:
+
+1. Continue using MySQL as the relational database platform.
+2. For cloud hosting, use a managed MySQL-compatible database with private network access, encryption, monitoring, and automated backups.
+3. Configure high availability based on agreed business recovery objectives and budget.
+4. Keep order creation, payment status updates, and stock reservations on the primary transactional database.
+5. Add read replicas for suitable catalogue and reporting workloads when required.
+6. Consider date-based partitioning for large historical order tables after testing the actual schema and query patterns.
+7. Introduce sharding only if monitoring shows that a single managed database cluster cannot meet storage or performance targets.
+8. Regularly test backup restoration, failover, and application reconnection.
+
+This approach provides a practical route to cloud adoption without introducing the complexity of a fully sharded distributed database before the business needs it.
+
+## 12. Conclusion
+
+This portfolio has examined how distributed and cloud database technologies can support Heywizzle Limited's e-commerce operations. A primary-and-replica architecture can separate transactional writes from suitable read workloads. Partitioning can help manage large tables, while sharding can distribute data across database nodes when the business reaches a scale that justifies it.
+
+The design must also address replication lag, transaction consistency, database availability, failover, backups, and recovery. Order, payment, and stock operations require reliable transactional handling and should not depend on potentially stale replica data.
+
+A managed MySQL-compatible cloud database with private access, backups, monitoring, and suitable high availability is the recommended starting point. Replicas and partitioning can be introduced as the workload grows, while sharding remains a later optimisation supported by measured evidence.
 
 
