@@ -5,7 +5,7 @@
 ### Course: Advanced Database System (MIT 8103)
 ### Project Title: Design and Implementation of an E-commerce Database Management System
 ### Selected Organisation: Heywizzle Limited
-## Github Link: aadedayo9382/advanced-database-portfolio-mit8103
+### Github Link: https://github.com/aadedayo9382/advanced-database-portfolio-mit8103
 
 
 
@@ -83,7 +83,7 @@ The activity considered important operational factors such as replication lag, r
 
 ## 3. GitHub Repository and Practical Evidence
 The source code, SQL scripts, screenshot, database designs and portfolio documentation are available through the project's GitHub repository.
-GitHub Repository: aadedayo9382/advanced-database-portfolio-mit8103
+GitHub Repository: https://github.com/aadedayo9382/advanced-database-portfolio-mit8103
 
 ## 4. Test Tools
 The following tools were used to carry out various tests described in the project 
